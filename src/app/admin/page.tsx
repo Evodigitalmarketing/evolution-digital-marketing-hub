@@ -24,12 +24,12 @@ export default async function Admin() {
   const revenue = paid.reduce((s, q) => s + (q.price.ok ? q.price.subtotal : 0), 0);
 
   return (
-    <div className="on-cream mx-auto w-full max-w-5xl px-4 py-8 space-y-6">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <span className="eyebrow">Owner view</span>
-          <h1 className="mt-2 text-3xl">Quotes</h1>
-          <p className="text-sm text-ink-soft">
+          <span className="eyebrow !text-lime">Owner view</span>
+          <h1 className="display mt-2 text-5xl text-lime">Quotes</h1>
+          <p className="text-sm text-cream/75">
             Rate card <b>{card.version}</b> · min order {cad(card.limits.minOrderValue)} · quotes valid {card.limits.quoteValidDays} days
           </p>
         </div>
@@ -47,7 +47,7 @@ export default async function Admin() {
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-navy/10 bg-paper">
+      <div className="overflow-x-auto rounded-2xl border border-navy/10 bg-paper text-navy">
         <table className="w-full text-sm">
           <thead className="bg-navy text-cream text-left text-xs uppercase tracking-wider">
             <tr>
@@ -92,14 +92,14 @@ export default async function Admin() {
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-ink-soft">Demo admin view, no login. Production: owner login, GHL pipeline sync, rate-card reload, pause switch.</p>
+      <p className="text-xs text-cream/60">Demo admin view, no login. Production: owner login, GHL pipeline sync, rate-card reload, pause switch.</p>
     </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-navy/10 bg-paper px-3 py-2">
+    <div className="rounded-xl bg-cream text-navy px-3 py-2">
       <div className="text-lg font-bold text-navy">{value}</div>
       <div className="text-xs text-ink-soft">{label}</div>
     </div>

@@ -13,7 +13,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
   const expired = isExpired(quote);
 
   return (
-    <section className="bg-navy text-cream flex-1">
+    <section className="text-cream flex-1">
       <div className="mx-auto w-full max-w-3xl px-4 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="text-sm font-bold text-lime">
@@ -26,14 +26,14 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div>
-          <span className="eyebrow">Your quote</span>
-          <h1 className="mt-3 text-[clamp(26px,4.5vw,38px)]">
-            Quote {quote.id}. <span className="text-lime">Firm for 30 days.</span>
+          <h1 className="display text-[clamp(40px,6vw,64px)]">
+            <span className="block text-lime">Quote {quote.id}.</span>
+            <span className="block text-cream">Firm for 30 days.</span>
           </h1>
         </div>
 
         {quote.needs.productDescription && (
-          <div className="rounded-2xl bg-navy-deep border border-cream/10 px-4 py-3 text-sm">
+          <div className="rounded-2xl bg-navy-deep/70 border border-cream/15 px-4 py-3 text-sm">
             <span className="font-bold text-lime">You told us:</span> “{quote.needs.productDescription}”
           </div>
         )}

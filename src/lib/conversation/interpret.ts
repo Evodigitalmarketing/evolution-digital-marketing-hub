@@ -45,7 +45,7 @@ export function guessEnvironment(t: string): Needs["environment"] {
   if (has(t, "fridge", "refrigerat", "chill", "cold", "cooler")) env.push("fridge");
   if (has(t, "wet", "water", "shower", "bath", "sink", "ice bucket", "condensation", "waterproof", "rain", "moist", "damp")) env.push("wet");
   if (has(t, "outdoor", "outside", "sun", "uv", "patio", "garden", "weather")) env.push("outdoor");
-  if (has(t, "heat", "hot\\b", "candle", "dishwasher", "engine", "oven", "microwave", "warm")) env.push("heat");
+  if (has(t, "heat", "candle", "dishwasher", "engine", "oven", "microwave", "high temp", "hot fill", "near a flame")) env.push("heat");
   if (has(t, "handled", "handling", "passed around", "rough", "scuff", "reusable", "refill")) env.push("handled");
   if (has(t, "dry", "shelf", "indoor", "pantry", "cupboard", "office", "retail")) env.push("indoor_dry");
   return [...new Set(env)];

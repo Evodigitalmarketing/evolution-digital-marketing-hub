@@ -42,3 +42,9 @@ describe("vague containers", () => {
     expect(interpretAnswer("size", "dropper bottle", { environment: [] }).value).toBe("2x1");
   });
 });
+
+describe("heat", () => {
+  it("does not read 'hot sauce' as heat", () => {
+    expect(extractFromBrief("hot sauce in glass bottles, kept in the fridge").environment).toEqual(["fridge"]);
+  });
+});

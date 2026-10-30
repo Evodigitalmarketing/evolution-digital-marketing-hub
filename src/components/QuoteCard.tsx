@@ -10,14 +10,14 @@ export function QuoteCard({ quote, compact = false }: { quote: Quote; compact?: 
 
   if (!price.ok) {
     return (
-      <div className="on-cream rounded-2xl bg-cream text-navy p-5">
+      <div className="on-cream rounded-2xl bg-paper text-navy p-5 shadow-[0_2px_10px_rgba(42,49,68,.08)] border border-navy/10">
         <span className="eyebrow">Quote {quote.id}</span>
         <h2 className="mt-2 text-xl">One of our team will price this one</h2>
         <p className="mt-2 text-[15px] text-ink-soft">
           Your request includes {listJoin(price.reasons)}. That's outside what I can price automatically, so a person will
           send you a firm quote within one business day. Everything you told me is saved with it.
         </p>
-        <div className="mt-4 rounded-xl bg-paper p-3 text-sm">
+        <div className="mt-4 rounded-xl bg-cream p-3 text-sm">
           <b>What you asked for:</b> {rec.plainSummary}
         </div>
       </div>
@@ -25,28 +25,28 @@ export function QuoteCard({ quote, compact = false }: { quote: Quote; compact?: 
   }
 
   return (
-    <div className="on-cream rounded-2xl bg-cream text-navy p-5">
+    <div className="on-cream rounded-2xl bg-paper text-navy p-5 shadow-[0_2px_10px_rgba(42,49,68,.08)] border border-navy/10">
       <span className="eyebrow">Quote {quote.id}</span>
       <h2 className="mt-2 text-xl leading-snug">{rec.plainSummary}</h2>
 
       <div className="mt-4 flex items-baseline justify-between border-t-2 border-navy pt-3">
         <span className="font-bold">Your price</span>
         <span className="text-right">
-          <strong className="text-[28px] tabular-nums">{cad(price.subtotal)}</strong>
+          <strong className="display text-[44px] tabular-nums text-navy">{cad(price.subtotal)}</strong>
           <span className="block text-xs text-ink-soft">{cad(price.perLabel)} per label</span>
         </span>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
-        <span className="rounded-full bg-paper px-3 py-1">Ships in {price.turnaroundBusinessDays} business days</span>
-        <span className="rounded-full bg-paper px-3 py-1">Firm until {expires}</span>
-        <span className="rounded-full bg-paper px-3 py-1">Tax &amp; shipping at checkout</span>
+        <span className="rounded-full bg-cream px-3 py-1">Ships in {price.turnaroundBusinessDays} business days</span>
+        <span className="rounded-full bg-cream px-3 py-1">Firm until {expires}</span>
+        <span className="rounded-full bg-cream px-3 py-1">Tax &amp; shipping at checkout</span>
       </div>
 
       {rec.flags.length > 0 && (
         <ul className="mt-4 space-y-2">
           {rec.flags.map((f, i) => (
-            <li key={i} className="flex gap-2.5 rounded-xl bg-paper border-l-4 border-lime p-3 text-sm">
+            <li key={i} className="flex gap-2.5 rounded-xl bg-cream border-l-4 border-lime p-3 text-sm">
               {f.text}
             </li>
           ))}
@@ -58,7 +58,7 @@ export function QuoteCard({ quote, compact = false }: { quote: Quote; compact?: 
           <div className="text-sm font-bold">Nearby quantities</div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {price.alternatives.map((a) => (
-              <div key={a.quantity} className="rounded-xl bg-paper p-2.5 text-sm">
+              <div key={a.quantity} className="rounded-xl bg-cream p-2.5 text-sm">
                 <div className="font-extrabold">{a.quantity.toLocaleString()}</div>
                 <div className="tabular-nums">{cad(a.subtotal)}</div>
                 <div className="text-xs text-ink-soft">{cad(a.perLabel)} each</div>
@@ -71,7 +71,7 @@ export function QuoteCard({ quote, compact = false }: { quote: Quote; compact?: 
       <div className="mt-4 space-y-2 text-sm">
         <details>
           <summary className="font-bold">Why this price</summary>
-          <ul className="mt-2 divide-y divide-navy/10 rounded-xl bg-paper px-3">
+          <ul className="mt-2 divide-y divide-navy/10 rounded-xl bg-cream px-3">
             {price.lineItems.map((li) => (
               <li key={li.code} className="py-2">
                 <div className="flex justify-between gap-3">
@@ -91,7 +91,7 @@ export function QuoteCard({ quote, compact = false }: { quote: Quote; compact?: 
 
         <details>
           <summary className="font-bold">Why we chose these materials</summary>
-          <ul className="mt-2 space-y-1.5 rounded-xl bg-paper p-3">
+          <ul className="mt-2 space-y-1.5 rounded-xl bg-cream p-3">
             {rec.reasons.map((r, i) => (
               <li key={i}>{r.text}</li>
             ))}
@@ -100,7 +100,7 @@ export function QuoteCard({ quote, compact = false }: { quote: Quote; compact?: 
 
         <details>
           <summary className="font-bold">Technical spec</summary>
-          <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 rounded-xl bg-paper p-3">
+          <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 rounded-xl bg-cream p-3">
             {techSummary(rec.spec).map(([k, v]) => (
               <div key={k} className="contents">
                 <dt className="text-ink-soft">{k}</dt>

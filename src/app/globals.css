@@ -1,12 +1,18 @@
 @import "tailwindcss";
 
-/* Design system lifted from the Label Source Instant Quote pitch page:
-   alternating navy / cream bands, Sen type, one lime accent for actions. */
+/* Label Source brand, taken from labelsource.ca: grain navy ground, Achemost display
+   headlines in lime and cream, Sen for everything else, lime pill buttons. */
+@font-face {
+  font-family: "Achemost";
+  src: url("/brand/Achemost.otf") format("opentype");
+  font-display: swap;
+}
+
 :root {
   --navy: #2a3144;
   --navy-deep: #1f2536;
   --lime: #c7d903;
-  --lime-ink: #8e9a00;
+  --lime-ink: #7f8a00;
   --cream: #f4f1e4;
   --cream-2: #eae6d4;
   --ink: #2a3144;
@@ -25,19 +31,20 @@
   --color-ink-soft: var(--ink-soft);
   --color-paper: var(--paper);
   --font-sans: "Sen", Helvetica, Arial, sans-serif;
+  --font-display: "Achemost", Georgia, serif;
 }
 
 html,
 body {
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
-  background: var(--cream);
-  color: var(--ink);
+  background: var(--navy) url("/brand/Blue-Grain-1600.jpg") center top / cover fixed;
+  color: var(--cream);
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -45,52 +52,42 @@ h1,
 h2,
 h3 {
   font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  line-height: 1.1;
   text-wrap: balance;
 }
 
-.eyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--lime);
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.eyebrow::before {
-  content: "";
-  width: 22px;
-  height: 3px;
-  background: currentColor;
-  border-radius: 2px;
-}
-.on-cream .eyebrow {
-  color: var(--lime-ink);
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
 }
 
+.dashed-rule {
+  border-top: 1.5px dashed var(--lime);
+}
+
+/* buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: var(--lime);
   color: var(--navy);
   font-weight: 800;
-  padding: 14px 24px;
+  padding: 13px 24px;
   border-radius: 999px;
   text-decoration: none;
   font-size: 15px;
   border: 0;
   cursor: pointer;
   font-family: inherit;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s ease;
 }
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(199, 217, 3, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(199, 217, 3, 0.35);
 }
 .btn:disabled {
   opacity: 0.4;
@@ -98,94 +95,108 @@ h3 {
   box-shadow: none;
   cursor: default;
 }
+.btn.navy {
+  background: var(--navy);
+  color: var(--cream);
+}
+.btn.navy:hover {
+  box-shadow: 0 8px 22px rgba(42, 49, 68, 0.3);
+}
 .btn.ghost {
   background: transparent;
-  color: inherit;
-  border: 2px solid currentColor;
+  color: var(--navy);
+  border: 2px solid var(--navy);
 }
 .btn.ghost:hover {
   box-shadow: none;
-  background: rgba(255, 255, 255, 0.06);
-}
-.on-cream .btn.ghost:hover {
   background: rgba(42, 49, 68, 0.06);
 }
 
-/* chat */
+/* chat panel (cream surface on the navy page) */
+.panel {
+  background: var(--cream);
+  color: var(--ink);
+  border-radius: 26px;
+  box-shadow: 0 30px 80px rgba(8, 11, 22, 0.45);
+}
+
 .msg {
   max-width: 86%;
-  padding: 11px 14px;
+  padding: 11px 15px;
   border-radius: 18px;
   font-size: 15px;
-  line-height: 1.42;
-}
-.msg.them {
-  align-self: flex-end;
-  background: var(--lime);
-  color: var(--navy);
-  border-bottom-right-radius: 5px;
-  font-weight: 700;
+  line-height: 1.45;
 }
 .msg.us {
   align-self: flex-start;
-  background: rgba(244, 241, 228, 0.12);
-  color: var(--cream);
+  background: var(--paper);
+  color: var(--ink);
   border-bottom-left-radius: 5px;
+  box-shadow: 0 1px 2px rgba(42, 49, 68, 0.08);
+}
+.msg.them {
+  align-self: flex-end;
+  background: var(--navy);
+  color: var(--cream);
+  border-bottom-right-radius: 5px;
 }
 
 .chip {
   border-radius: 999px;
-  border: 1px solid rgba(244, 241, 228, 0.3);
-  color: var(--cream);
-  background: transparent;
-  padding: 9px 14px;
+  border: 1.5px solid rgba(42, 49, 68, 0.25);
+  color: var(--navy);
+  background: var(--paper);
+  padding: 8px 14px;
   font-size: 14px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
 .chip:hover {
-  border-color: var(--lime);
-  color: var(--lime);
+  border-color: var(--navy);
 }
 .chip.on {
-  background: var(--lime);
-  color: var(--navy);
-  border-color: var(--lime);
+  background: var(--navy);
+  color: var(--cream);
+  border-color: var(--navy);
 }
 
 .field {
   width: 100%;
-  background: rgba(244, 241, 228, 0.08);
-  border: 1px solid rgba(244, 241, 228, 0.25);
-  color: var(--cream);
-  border-radius: 14px;
-  padding: 12px 14px;
+  background: var(--paper);
+  border: 1.5px solid rgba(42, 49, 68, 0.18);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 12px 18px;
   font-size: 15px;
   font-family: inherit;
   outline: none;
 }
+.field.square {
+  border-radius: 14px;
+}
 .field::placeholder {
-  color: rgba(244, 241, 228, 0.5);
+  color: #8a8fa0;
 }
 .field:focus {
-  border-color: var(--lime);
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(199, 217, 3, 0.45);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lime-ink);
 }
 
 @keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
-.rise {
-  animation: rise 0.3s ease-out both;
-}
+.rise { animation: rise 0.28s ease-out both; }
 
 @keyframes blink {
   0%, 80%, 100% { opacity: 0.25; }
@@ -195,11 +206,20 @@ h3 {
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
 
+@keyframes float {
+  0%, 100% { transform: rotate(-8deg) translateY(0); }
+  50% { transform: rotate(-8deg) translateY(-6px); }
+}
+.roll { animation: float 6s ease-in-out infinite; }
+
 details > summary { list-style: none; cursor: pointer; }
 details > summary::-webkit-details-marker { display: none; }
 details > summary::before { content: "+ "; color: var(--lime-ink); font-weight: 800; }
 details[open] > summary::before { content: "– "; }
 
+.scroll-thin::-webkit-scrollbar { width: 6px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: rgba(42, 49, 68, 0.2); border-radius: 6px; }
+
 @media (prefers-reduced-motion: reduce) {
-  .rise, .btn { animation: none; transition: none; }
+  .rise, .roll, .btn { animation: none; transition: none; }
 }

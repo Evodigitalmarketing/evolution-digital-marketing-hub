@@ -55,7 +55,7 @@ export function ArtworkFlow({ initial }: { initial: Quote }) {
   const stage = quote.status === "paid" ? 4 : quote.status === "proof_approved" ? 3 : art?.preflight.ok ? 2 : 1;
 
   return (
-    <div className="on-cream rounded-2xl bg-cream text-navy p-5 space-y-5">
+    <div className="rounded-2xl bg-cream text-navy p-5 space-y-5 shadow-[0_20px_50px_rgba(8,11,22,.35)]">
       <ol className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider">
         {["Artwork", "Proof", "Pay"].map((s, i) => (
           <li key={s} className={`flex items-center gap-2 ${stage >= i + 1 ? "text-navy" : "text-ink-soft"}`}>

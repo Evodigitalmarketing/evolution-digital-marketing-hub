@@ -218,8 +218,8 @@ export const STEPS: Step[] = [
     kind: "contact",
     prompt: () => "Last thing: where should I send your quote link so you can come back to it?",
     apply: (n, a) => {
-      const [name, email, phone] = Array.isArray(a) ? a : String(a).split("|");
-      return { ...n, contact: { name, email, phone } };
+      const [name, email, phone, company] = Array.isArray(a) ? a : String(a).split("|");
+      return { ...n, contact: { name, email, phone, company: company || undefined } };
     },
   },
 ];
