@@ -1,4 +1,8 @@
 import { SIZE_SUGGESTIONS, type Needs } from "../advisor/needs";
+import { parseQuantity, parseSize } from "./parse";
+import { extractFromBrief } from "./interpret";
+
+export { parseQuantity, parseSize };
 
 // The guided conversation. Needs-first: the customer talks about their product,
 // the advisor turns it into a spec. Each step is data so the same flow can run
@@ -90,14 +94,32 @@ export const STEPS: Step[] = [
     kind: "text",
     prompt: () => "Hi, I'm the Label Source quote assistant. Tell me about your product and what the label is for, in your own words.",
     placeholder: "e.g. hot sauce in 250 ml glass bottles, selling at farmers markets",
-    apply: (n, a) => ({ ...n, productDescription: String(a) }),
-    ack: () => "Got it. A few quick questions so I recommend the right label, then you'll see a firm price.",
+    apply: (n, a) => {
+      const text = String(a);
+      const found = extractFromBrief(text);
+      return { ...n, ...found, productDescription: text, environment: found.environment ?? n.environment };
+    },
+    ack: (n) => {
+      const got: string[] = [];
+      if (n.category) got.push(CATEGORY.find((o) => o.id === n.category)?.label.toLowerCase() ?? "");
+      if (n.surface) got.push(SURFACE.find((o) => o.id === n.surface)?.label.toLowerCase() ?? "");
+      if (n.environment.length) got.push(n.environment.map((e) => ENVIRONMENT.find((o) => o.id === e)?.label.toLowerCase()).join(", "));
+      if (n.quantity) got.push(`${n.quantity.toLocaleString()} labels`);
+      if (n.widthIn && n.heightIn) got.push(n.sizeHelp ? `about ${n.widthIn}" × ${n.heightIn}" for ${/\d/.test(n.sizeHelp) ? `a ${n.sizeHelp} container` : n.sizeHelp}` : `${n.widthIn}" × ${n.heightIn}"`);
+      if (n.look) got.push(LOOK.find((o) => o.id === n.look)?.label.toLowerCase() ?? "");
+      if (n.application) got.push(APPLICATION.find((o) => o.id === n.application)?.label.toLowerCase() ?? "");
+      const base = got.filter(Boolean).length
+        ? `Got it. I picked up: ${got.filter(Boolean).join(" · ")}. A couple more questions and you'll have a firm price.`
+        : "Got it. A few quick questions so I recommend the right label, then you'll see a firm price.";
+      return base;
+    },
   },
   {
     id: "category",
     kind: "chips",
     prompt: () => "Which of these is closest to your product?",
     options: CATEGORY,
+    skipIf: (n) => !!n.category,
     apply: (n, a) => ({ ...n, category: a as Needs["category"] }),
     ack: (n) =>
       n.category === "cannabis" || n.category === "industrial_chemical" || n.category === "medical"
@@ -109,7 +131,7 @@ export const STEPS: Step[] = [
     kind: "chips",
     prompt: () => "What does the label go on?",
     options: SURFACE,
-    skipIf: (n) => n.category === "shipping_barcode",
+    skipIf: (n) => n.category === "shipping_barcode" || !!n.surface,
     apply: (n, a) => ({ ...n, surface: a as Needs["surface"] }),
   },
   {
@@ -117,7 +139,7 @@ export const STEPS: Step[] = [
     kind: "multichips",
     prompt: () => "Where will the product live? Pick everything that applies.",
     options: ENVIRONMENT,
-    skipIf: (n) => n.category === "shipping_barcode",
+    skipIf: (n) => n.category === "shipping_barcode" || n.environment.length > 0,
     apply: (n, a) => ({ ...n, environment: (Array.isArray(a) ? a : [a]) as Needs["environment"] }),
     ack: (n) => {
       const e = new Set(n.environment);
@@ -132,6 +154,7 @@ export const STEPS: Step[] = [
     kind: "chips",
     prompt: () => "How should the label look?",
     options: LOOK,
+    skipIf: (n) => !!n.look,
     apply: (n, a) => ({ ...n, look: a as Needs["look"] }),
     ack: (n) =>
       n.look === "clear_look"
@@ -143,6 +166,7 @@ export const STEPS: Step[] = [
     kind: "quantity",
     prompt: () => "How many labels do you need? Price per label drops at each quantity break, and I'll show you the nearby options.",
     options: QUANTITY,
+    skipIf: (n) => !!n.quantity,
     apply: (n, a) => ({ ...n, quantity: parseQuantity(String(a)) ?? n.quantity }),
   },
   {
@@ -151,21 +175,22 @@ export const STEPS: Step[] = [
     prompt: () =>
       "What size is the label? Type width × height in inches (like 3 x 4), or pick the container that matches yours and I'll suggest a size.",
     options: SIZE_SUGGESTIONS.map((s) => ({ id: s.id, label: s.label, hint: `${s.widthIn}" × ${s.heightIn}"` })),
+    skipIf: (n) => n.widthIn != null && n.heightIn != null,
     apply: (n, a) => {
       const str = String(a);
       const sug = SIZE_SUGGESTIONS.find((s) => s.id === str);
       if (sug) return { ...n, widthIn: sug.widthIn, heightIn: sug.heightIn, sizeHelp: sug.label };
       const parsed = parseSize(str);
-      return parsed ? { ...n, widthIn: parsed.w, heightIn: parsed.h, sizeHelp: undefined } : n;
+      return parsed ? { ...n, widthIn: parsed.w, heightIn: parsed.h, sizeHelp: n.sizeHelp } : n;
     },
-    ack: (n) => (n.sizeHelp ? `For a ${n.sizeHelp.toLowerCase()}, ${n.widthIn}" × ${n.heightIn}" is a common size. Tip: measure the flat area where the label will sit; you can change the size any time.` : undefined),
+    ack: (n) => (n.sizeHelp && SIZE_SUGGESTIONS.some((s) => s.label === n.sizeHelp) ? `For a ${n.sizeHelp.toLowerCase()}, ${n.widthIn}" × ${n.heightIn}" is a common size. Tip: measure the flat area where the label will sit; you can change the size any time.` : undefined),
   },
   {
     id: "application",
     kind: "chips",
     prompt: () => "How will the labels be applied?",
     options: APPLICATION,
-    skipIf: (n) => n.look === "blank" && n.category === "shipping_barcode",
+    skipIf: (n) => (n.look === "blank" && n.category === "shipping_barcode") || !!n.application,
     apply: (n, a) => ({ ...n, application: a as Needs["application"] }),
   },
   {
@@ -181,7 +206,7 @@ export const STEPS: Step[] = [
     kind: "chips",
     prompt: () => "Do you have a design ready to print?",
     options: ARTWORK,
-    skipIf: (n) => n.look === "blank",
+    skipIf: (n) => n.look === "blank" || !!n.artwork,
     apply: (n, a) => ({ ...n, artwork: a as Needs["artwork"] }),
     ack: (n) =>
       n.artwork === "need_design" || n.artwork === "logo_only"
@@ -199,19 +224,6 @@ export const STEPS: Step[] = [
   },
 ];
 
-export function parseQuantity(s: string): number | undefined {
-  const m = s.replace(/,/g, "").match(/(\d+(?:\.\d+)?)\s*(k)?/i);
-  if (!m) return undefined;
-  let n = parseFloat(m[1]);
-  if (m[2]) n *= 1000;
-  return Math.round(n);
-}
-
-export function parseSize(s: string): { w: number; h: number } | undefined {
-  const m = s.replace(/["”]/g, "").match(/(\d+(?:\.\d+)?)\s*(?:x|×|by|\*)\s*(\d+(?:\.\d+)?)/i);
-  if (!m) return undefined;
-  return { w: parseFloat(m[1]), h: parseFloat(m[2]) };
-}
 
 export function nextStep(n: Needs, afterIndex: number): number {
   for (let i = afterIndex + 1; i < STEPS.length; i++) {

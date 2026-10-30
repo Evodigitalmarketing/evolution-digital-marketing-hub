@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Needs } from "@/lib/advisor/needs";
-import { STEPS, nextStep, parseQuantity, parseSize } from "@/lib/conversation/steps";
+import { STEPS, nextStep } from "@/lib/conversation/steps";
+import { interpretAnswer } from "@/lib/conversation/interpret";
 import type { Quote } from "@/lib/quotes/model";
 import { QuoteCard } from "./QuoteCard";
 
@@ -22,6 +23,7 @@ export function QuoteChat() {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const bottom = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const step = stepIdx >= 0 ? STEPS[stepIdx] : null;
 
@@ -29,16 +31,21 @@ export function QuoteChat() {
     bottom.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [msgs, typing]);
 
+  useEffect(() => {
+    if (!typing && step && step.kind !== "contact") inputRef.current?.focus();
+  }, [typing, step]);
+
   async function say(texts: string[]) {
     for (const t of texts) {
+      if (!t) continue;
       setTyping(true);
-      await new Promise((r) => setTimeout(r, Math.min(900, 250 + t.length * 6)));
+      await new Promise((r) => setTimeout(r, Math.min(900, 250 + t.length * 5)));
       setTyping(false);
       setMsgs((m) => [...m, { role: "assistant", text: t }]);
     }
   }
 
-  async function answer(raw: string | string[], display: string) {
+  async function answer(raw: string | string[], display: string, note?: string) {
     if (!step || typing) return;
     setError(null);
     const updated = step.apply(needs, raw);
@@ -48,6 +55,7 @@ export function QuoteChat() {
     setMulti([]);
 
     const lines: string[] = [];
+    if (note) lines.push(note);
     const ack = step.ack?.(updated);
     if (ack) lines.push(ack);
 
@@ -77,7 +85,7 @@ export function QuoteChat() {
       const q: Quote = j.quote;
       setTyping(false);
       const intro = q.price.ok
-        ? `Here's your firm price. I've written out why I chose each material under the quote, and the nearby quantities in case a bigger run makes sense. Your quote link is ${q.id}.`
+        ? `Here's your price. It's firm for 30 days. I've written out why I chose each material under the quote, and the nearby quantities in case a bigger run makes sense. Your quote number is ${q.id}.`
         : `This one needs a person, and that's fine. Here's what I've saved for them.`;
       setMsgs((m) => [...m, { role: "assistant", text: intro }, { role: "quote", quote: q }]);
       if (q.price.ok) {
@@ -98,155 +106,169 @@ export function QuoteChat() {
     if (!step) return;
     const v = text.trim();
     if (!v) return;
-    if (step.kind === "quantity") {
-      const q = parseQuantity(v);
-      if (!q) return setError("Just a number is fine, like 2500 or 10k.");
-      return answer(String(q), q.toLocaleString() + " labels");
+    if (step.kind === "text") return answer(v, v);
+    if (step.kind === "multichips" && multi.length && !v) return;
+    const it = interpretAnswer(step.id, v, needs);
+    if (it.clarify || it.value == null) {
+      setMsgs((m) => [...m, { role: "user", text: v }]);
+      setText("");
+      void say([it.clarify ?? "Sorry, I didn't catch that."]);
+      return;
     }
-    if (step.kind === "size") {
-      const s = parseSize(v);
-      if (!s) return setError('Type it as width x height in inches, like 3 x 4, or pick a container below.');
-      return answer(`${s.w}x${s.h}`, `${s.w}" × ${s.h}"`);
-    }
-    answer(v, v);
+    answer(it.value, it.display, it.note);
   }
 
   function submitContact() {
-    if (!contact.email && !contact.phone) return setError("An email or a phone number, so I can send the link.");
+    if (!contact.email && !contact.phone) return setError("An email or a mobile number, so I can send you the link.");
     answer([contact.name, contact.email, contact.phone], [contact.name, contact.email, contact.phone].filter(Boolean).join(" · "));
   }
 
+  const showInput = step && step.kind !== "contact";
+
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="mx-auto w-full max-w-3xl flex-1 px-4 pt-4 pb-40 space-y-3">
-        {msgs.map((m, i) =>
-          m.role === "quote" ? (
-            <div key={i} className="rise">
-              <QuoteCard quote={m.quote} />
-            </div>
-          ) : (
-            <div key={i} className={`rise flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed ${
-                  m.role === "user" ? "bg-navy text-white rounded-br-md" : "bg-cream text-ink rounded-bl-md"
-                }`}
-              >
-                {m.text}
-              </div>
-            </div>
-          ),
-        )}
-        {typing && (
-          <div className="flex justify-start">
-            <div className="rounded-2xl rounded-bl-md bg-cream px-4 py-3 flex gap-1">
-              <span className="dot h-2 w-2 rounded-full bg-navy" />
-              <span className="dot h-2 w-2 rounded-full bg-navy" />
-              <span className="dot h-2 w-2 rounded-full bg-navy" />
-            </div>
-          </div>
-        )}
-        {done && (
-          <div className="pt-2 text-center">
-            <button onClick={() => window.location.reload()} className="text-sm font-semibold text-navy underline">
-              Start another quote
-            </button>
-          </div>
-        )}
-        <div ref={bottom} />
-      </div>
-
-      {step && !typing && (
-        <div className="fixed inset-x-0 bottom-0 border-t border-line bg-white/95 backdrop-blur">
-          <div className="mx-auto max-w-3xl px-4 py-3 space-y-2">
-            {error && <div className="text-sm text-red-700">{error}</div>}
-
-            {(step.kind === "chips" || step.kind === "quantity" || step.kind === "size") && step.options && (
-              <div className="flex flex-wrap gap-2">
-                {step.options.map((o) => (
-                  <button
-                    key={o.id}
-                    onClick={() => answer(o.id, o.hint && step.kind === "size" ? `${o.label} (${o.hint})` : o.label)}
-                    className="rounded-full border border-navy/30 bg-white px-3.5 py-2 text-sm font-medium text-navy hover:bg-cream active:bg-lime/40"
-                    title={o.hint}
-                  >
-                    {o.label}
-                    {o.hint && step.kind !== "size" && <span className="ml-1 text-xs text-muted">· {o.hint}</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {step.kind === "multichips" && step.options && (
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-2">
-                  {step.options.map((o) => {
-                    const on = multi.includes(o.id);
-                    return (
-                      <button
-                        key={o.id}
-                        onClick={() => setMulti((m) => (on ? m.filter((x) => x !== o.id) : [...m, o.id]))}
-                        className={`rounded-full border px-3.5 py-2 text-sm font-medium ${
-                          on ? "border-navy bg-navy text-white" : "border-navy/30 bg-white text-navy hover:bg-cream"
-                        }`}
-                      >
-                        {o.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <button
-                  disabled={multi.length === 0}
-                  onClick={() =>
-                    answer(
-                      multi,
-                      multi.map((id) => step.options!.find((o) => o.id === id)?.label).join(", "),
-                    )
-                  }
-                  className="w-full rounded-xl bg-lime px-4 py-3 font-semibold text-navy disabled:opacity-40"
-                >
-                  That's everything
-                </button>
-              </div>
-            )}
-
-            {step.kind === "contact" && (
-              <div className="grid gap-2 sm:grid-cols-3">
-                <input className={inputCls} placeholder="Your name" value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} />
-                <input className={inputCls} placeholder="Email" type="email" inputMode="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} />
-                <input className={inputCls} placeholder="Mobile (for texts)" type="tel" inputMode="tel" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} />
-                <button onClick={submitContact} className="sm:col-span-3 rounded-xl bg-lime px-4 py-3 font-semibold text-navy">
-                  Show my price
-                </button>
-              </div>
-            )}
-
-            {(step.kind === "text" || step.kind === "quantity" || step.kind === "size") && (
-              <form
-                className="flex gap-2"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  submitText();
-                }}
-              >
-                <input
-                  className={inputCls + " flex-1"}
-                  placeholder={step.placeholder ?? (step.kind === "quantity" ? "Or type a quantity" : step.kind === "size" ? 'Or type a size, e.g. 3 x 4' : "Type your answer")}
-                  value={text}
-                  inputMode={step.kind === "quantity" ? "numeric" : "text"}
-                  onChange={(e) => setText(e.target.value)}
-                  autoFocus={step.kind === "text"}
-                />
-                <button type="submit" className="rounded-xl bg-navy px-4 py-3 font-semibold text-white">
-                  Send
-                </button>
-              </form>
-            )}
-          </div>
+    <section className="bg-navy text-cream flex-1 flex flex-col">
+      <div className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-6 flex flex-col">
+        <div className="mb-4">
+          <span className="eyebrow">Instant quote</span>
+          <h1 className="mt-3 text-[clamp(28px,5vw,44px)]">
+            Tell us about your product. <span className="text-lime">We'll do the label part.</span>
+          </h1>
+          <p className="mt-3 text-cream/85 max-w-[60ch]">
+            Describe what you sell in your own words. We pick the right material, give you a firm price, check your artwork
+            and take the order. No label jargon required.
+          </p>
         </div>
-      )}
-    </div>
+
+        <div className="bg-navy-deep border border-cream/10 rounded-[28px] shadow-[0_30px_70px_rgba(0,0,0,.35)] flex flex-col flex-1 min-h-[520px]">
+          <div className="flex justify-between items-center text-xs text-cream/70 px-5 pt-4 pb-2">
+            <span>
+              <b className="text-cream">Label Source</b> · quote assistant
+            </span>
+            <span>Replies in seconds</span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 pb-3 flex flex-col gap-2.5">
+            {msgs.map((m, i) =>
+              m.role === "quote" ? (
+                <div key={i} className="rise self-stretch">
+                  <QuoteCard quote={m.quote} />
+                </div>
+              ) : (
+                <div key={i} className={`rise msg ${m.role === "user" ? "them" : "us"}`}>
+                  {m.text}
+                </div>
+              ),
+            )}
+            {typing && (
+              <div className="msg us flex gap-1 py-3">
+                <span className="dot h-2 w-2 rounded-full bg-cream" />
+                <span className="dot h-2 w-2 rounded-full bg-cream" />
+                <span className="dot h-2 w-2 rounded-full bg-cream" />
+              </div>
+            )}
+            {done && (
+              <button onClick={() => window.location.reload()} className="self-center mt-2 text-sm font-bold text-lime underline">
+                Start another quote
+              </button>
+            )}
+            <div ref={bottom} />
+          </div>
+
+          {step && !typing && (
+            <div className="border-t border-cream/10 px-4 py-3 space-y-2.5">
+              {error && <div className="text-sm text-[#ffb3a1]">{error}</div>}
+
+              {step.options && step.kind !== "multichips" && (
+                <div className="flex flex-wrap gap-2">
+                  {step.options.map((o) => (
+                    <button
+                      key={o.id}
+                      onClick={() => answer(o.id, o.hint && step.kind === "size" ? `${o.label} (${o.hint})` : o.label)}
+                      className="chip"
+                      title={o.hint}
+                    >
+                      {o.label}
+                      {o.hint && step.kind !== "size" && <span className="ml-1 font-normal text-cream/60">· {o.hint}</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {step.kind === "multichips" && step.options && (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {step.options.map((o) => {
+                      const on = multi.includes(o.id);
+                      return (
+                        <button
+                          key={o.id}
+                          onClick={() => setMulti((m) => (on ? m.filter((x) => x !== o.id) : [...m, o.id]))}
+                          className={`chip ${on ? "on" : ""}`}
+                        >
+                          {o.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {multi.length > 0 && (
+                    <button
+                      onClick={() => answer(multi, multi.map((id) => step.options!.find((o) => o.id === id)?.label).join(", "))}
+                      className="btn w-full"
+                    >
+                      That's everything
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {step.kind === "contact" && (
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <input className="field" placeholder="Your name" value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} />
+                  <input className="field" placeholder="Email" type="email" inputMode="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} />
+                  <input className="field" placeholder="Mobile (for texts)" type="tel" inputMode="tel" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} />
+                  <button onClick={submitContact} className="btn sm:col-span-3">
+                    Show my price
+                  </button>
+                </div>
+              )}
+
+              {showInput && (
+                <form
+                  className="flex gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    submitText();
+                  }}
+                >
+                  <input
+                    ref={inputRef}
+                    className="field flex-1"
+                    placeholder={
+                      step.placeholder ??
+                      (step.kind === "quantity"
+                        ? "Or type a quantity, like 2500 or 10k"
+                        : step.kind === "size"
+                          ? 'Or type a size (3 x 4) or container ("30 ml bottle")'
+                          : step.kind === "multichips"
+                            ? "Or describe it: fridge, outdoors, gets wet…"
+                            : "Or type your answer")
+                    }
+                    value={text}
+                    inputMode={step.kind === "quantity" ? "numeric" : "text"}
+                    onChange={(e) => setText(e.target.value)}
+                  />
+                  <button type="submit" className="btn px-5">
+                    Send
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
+        <p className="mt-3 text-xs text-cream/60 text-center">
+          You can type at any point instead of tapping. Unusual job? We'll say so and a person will quote it.
+        </p>
+      </div>
+    </section>
   );
 }
-
-const inputCls =
-  "rounded-xl border border-line bg-white px-3.5 py-3 text-[15px] outline-none focus:border-navy focus:ring-2 focus:ring-lime/50";

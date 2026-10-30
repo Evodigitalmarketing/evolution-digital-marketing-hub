@@ -39,7 +39,7 @@ describe("priceQuote", () => {
     expect(r.subtotal).toBe(getRateCard().limits.minOrderValue);
   });
   it("routes out-of-range to a human with readable reasons", () => {
-    const r = priceQuote({ ...base, quantity: 100000, material: "other" });
+    const r = priceQuote({ ...base, quantity: 400000, material: "other" });
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.reasons.length).toBe(2);
@@ -52,5 +52,12 @@ describe("priceQuote", () => {
     const a = priceQuote({ ...base, quantity: 1000 }), b = priceQuote({ ...base, quantity: 10000 });
     if (!a.ok || !b.ok) throw new Error();
     expect(b.perLabel).toBeLessThan(a.perLabel);
+  });
+});
+
+describe("large runs", () => {
+  it("auto-quotes 80,000", () => {
+    const r = priceQuote({ ...base, quantity: 80000 });
+    expect(r.ok).toBe(true);
   });
 });

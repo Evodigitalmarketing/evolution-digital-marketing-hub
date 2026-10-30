@@ -24,11 +24,12 @@ export default async function Admin() {
   const revenue = paid.reduce((s, q) => s + (q.price.ok ? q.price.subtotal : 0), 0);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 space-y-6">
+    <div className="on-cream mx-auto w-full max-w-5xl px-4 py-8 space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold">Quotes</h1>
-          <p className="text-sm text-muted">
+          <span className="eyebrow">Owner view</span>
+          <h1 className="mt-2 text-3xl">Quotes</h1>
+          <p className="text-sm text-ink-soft">
             Rate card <b>{card.version}</b> · min order {cad(card.limits.minOrderValue)} · quotes valid {card.limits.quoteValidDays} days
           </p>
         </div>
@@ -41,14 +42,14 @@ export default async function Admin() {
       </div>
 
       {human.length > 0 && (
-        <div className="rounded-xl border border-coral bg-coral/15 p-3 text-sm">
+        <div className="rounded-xl bg-paper border-l-4 border-lime p-3 text-sm">
           <b>{human.length}</b> quote{human.length > 1 ? "s" : ""} waiting for a person. Reasons are listed on each.
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+      <div className="overflow-x-auto rounded-2xl border border-navy/10 bg-paper">
         <table className="w-full text-sm">
-          <thead className="bg-cream text-left text-xs uppercase tracking-wider text-muted">
+          <thead className="bg-navy text-cream text-left text-xs uppercase tracking-wider">
             <tr>
               <th className="px-3 py-2">Quote</th>
               <th className="px-3 py-2">Customer</th>
@@ -58,7 +59,7 @@ export default async function Admin() {
               <th className="px-3 py-2">Created</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody className="divide-y divide-navy/10">
             {quotes.map((q) => (
               <tr key={q.id} className="align-top">
                 <td className="px-3 py-2 font-mono">
@@ -68,22 +69,22 @@ export default async function Admin() {
                 </td>
                 <td className="px-3 py-2">
                   <div>{q.needs.contact?.name || "–"}</div>
-                  <div className="text-xs text-muted">{q.needs.contact?.email || q.needs.contact?.phone}</div>
+                  <div className="text-xs text-ink-soft">{q.needs.contact?.email || q.needs.contact?.phone}</div>
                 </td>
                 <td className="px-3 py-2 max-w-md">
                   <div>{q.recommendation.plainSummary}</div>
-                  {q.needs.productDescription && <div className="text-xs text-muted line-clamp-2">“{q.needs.productDescription}”</div>}
-                  {!q.price.ok && <div className="text-xs text-red-700">Needs human: {q.price.reasons.join("; ")}</div>}
-                  {q.recommendation.humanReview && <div className="text-xs text-red-700">Regulated category: confirm compliance before print</div>}
+                  {q.needs.productDescription && <div className="text-xs text-ink-soft line-clamp-2">“{q.needs.productDescription}”</div>}
+                  {!q.price.ok && <div className="text-xs text-[#b4432f]">Needs human: {q.price.reasons.join("; ")}</div>}
+                  {q.recommendation.humanReview && <div className="text-xs text-[#b4432f]">Regulated category: confirm compliance before print</div>}
                 </td>
                 <td className="px-3 py-2 text-right font-medium">{q.price.ok ? cad(q.price.subtotal) : "–"}</td>
                 <td className="px-3 py-2">{STATUS_LABEL[q.status] ?? q.status}</td>
-                <td className="px-3 py-2 text-xs text-muted">{new Date(q.createdAt).toLocaleString("en-CA")}</td>
+                <td className="px-3 py-2 text-xs text-ink-soft">{new Date(q.createdAt).toLocaleString("en-CA")}</td>
               </tr>
             ))}
             {quotes.length === 0 && (
               <tr>
-                <td className="px-3 py-6 text-center text-muted" colSpan={6}>
+                <td className="px-3 py-6 text-center text-ink-soft" colSpan={6}>
                   No quotes yet.
                 </td>
               </tr>
@@ -91,16 +92,16 @@ export default async function Admin() {
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-muted">Demo admin view, no login. Production: owner login, GHL pipeline sync, rate-card reload, pause switch.</p>
+      <p className="text-xs text-ink-soft">Demo admin view, no login. Production: owner login, GHL pipeline sync, rate-card reload, pause switch.</p>
     </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-line bg-white px-3 py-2">
+    <div className="rounded-xl border border-navy/10 bg-paper px-3 py-2">
       <div className="text-lg font-bold text-navy">{value}</div>
-      <div className="text-xs text-muted">{label}</div>
+      <div className="text-xs text-ink-soft">{label}</div>
     </div>
   );
 }
