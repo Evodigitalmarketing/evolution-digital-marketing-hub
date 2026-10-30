@@ -1,0 +1,121 @@
+{
+  "version": "2026-10-30-placeholder",
+  "currency": "CAD",
+  "notes": "PLACEHOLDER NUMBERS FOR DEMO ONLY. Replace with Label Source's real rate card before any quote is shown to a customer. Structure mirrors the rate-card sheet spec in the build plan: base price per 1,000 by material and size band at each quantity break; uplifts for print, adhesive, coating; setup charges; dies; turnaround; limits.",
+  "limits": {
+    "minWidthIn": 0.5,
+    "maxWidthIn": 8,
+    "minHeightIn": 0.5,
+    "maxHeightIn": 12,
+    "minQuantity": 250,
+    "maxQuantity": 50000,
+    "minOrderValue": 75,
+    "quoteValidDays": 30
+  },
+  "sizeBands": [
+    { "id": "xs", "label": "up to 4 sq in", "maxSqIn": 4 },
+    { "id": "s", "label": "4 to 9 sq in", "maxSqIn": 9 },
+    { "id": "m", "label": "9 to 16 sq in", "maxSqIn": 16 },
+    { "id": "l", "label": "16 to 30 sq in", "maxSqIn": 30 },
+    { "id": "xl", "label": "30 to 60 sq in", "maxSqIn": 60 },
+    { "id": "xxl", "label": "60 to 96 sq in", "maxSqIn": 96 }
+  ],
+  "basePrice": {
+    "thermal_transfer": {
+      "xs": [{ "minQty": 250, "pricePerThousand": 38 }, { "minQty": 1000, "pricePerThousand": 30 }, { "minQty": 2500, "pricePerThousand": 24 }, { "minQty": 5000, "pricePerThousand": 19 }, { "minQty": 10000, "pricePerThousand": 15 }, { "minQty": 25000, "pricePerThousand": 12 }],
+      "s": [{ "minQty": 250, "pricePerThousand": 48 }, { "minQty": 1000, "pricePerThousand": 38 }, { "minQty": 2500, "pricePerThousand": 30 }, { "minQty": 5000, "pricePerThousand": 24 }, { "minQty": 10000, "pricePerThousand": 19 }, { "minQty": 25000, "pricePerThousand": 15 }],
+      "m": [{ "minQty": 250, "pricePerThousand": 62 }, { "minQty": 1000, "pricePerThousand": 49 }, { "minQty": 2500, "pricePerThousand": 39 }, { "minQty": 5000, "pricePerThousand": 31 }, { "minQty": 10000, "pricePerThousand": 25 }, { "minQty": 25000, "pricePerThousand": 20 }],
+      "l": [{ "minQty": 250, "pricePerThousand": 88 }, { "minQty": 1000, "pricePerThousand": 70 }, { "minQty": 2500, "pricePerThousand": 56 }, { "minQty": 5000, "pricePerThousand": 45 }, { "minQty": 10000, "pricePerThousand": 36 }, { "minQty": 25000, "pricePerThousand": 29 }],
+      "xl": [{ "minQty": 250, "pricePerThousand": 140 }, { "minQty": 1000, "pricePerThousand": 112 }, { "minQty": 2500, "pricePerThousand": 90 }, { "minQty": 5000, "pricePerThousand": 72 }, { "minQty": 10000, "pricePerThousand": 58 }, { "minQty": 25000, "pricePerThousand": 46 }],
+      "xxl": [{ "minQty": 250, "pricePerThousand": 210 }, { "minQty": 1000, "pricePerThousand": 168 }, { "minQty": 2500, "pricePerThousand": 134 }, { "minQty": 5000, "pricePerThousand": 108 }, { "minQty": 10000, "pricePerThousand": 86 }, { "minQty": 25000, "pricePerThousand": 69 }]
+    },
+    "direct_thermal": {
+      "xs": [{ "minQty": 250, "pricePerThousand": 36 }, { "minQty": 1000, "pricePerThousand": 28 }, { "minQty": 2500, "pricePerThousand": 22 }, { "minQty": 5000, "pricePerThousand": 18 }, { "minQty": 10000, "pricePerThousand": 14 }, { "minQty": 25000, "pricePerThousand": 11 }],
+      "s": [{ "minQty": 250, "pricePerThousand": 45 }, { "minQty": 1000, "pricePerThousand": 36 }, { "minQty": 2500, "pricePerThousand": 28 }, { "minQty": 5000, "pricePerThousand": 22 }, { "minQty": 10000, "pricePerThousand": 18 }, { "minQty": 25000, "pricePerThousand": 14 }],
+      "m": [{ "minQty": 250, "pricePerThousand": 58 }, { "minQty": 1000, "pricePerThousand": 46 }, { "minQty": 2500, "pricePerThousand": 37 }, { "minQty": 5000, "pricePerThousand": 29 }, { "minQty": 10000, "pricePerThousand": 23 }, { "minQty": 25000, "pricePerThousand": 19 }],
+      "l": [{ "minQty": 250, "pricePerThousand": 82 }, { "minQty": 1000, "pricePerThousand": 66 }, { "minQty": 2500, "pricePerThousand": 53 }, { "minQty": 5000, "pricePerThousand": 42 }, { "minQty": 10000, "pricePerThousand": 34 }, { "minQty": 25000, "pricePerThousand": 27 }],
+      "xl": [{ "minQty": 250, "pricePerThousand": 130 }, { "minQty": 1000, "pricePerThousand": 104 }, { "minQty": 2500, "pricePerThousand": 84 }, { "minQty": 5000, "pricePerThousand": 67 }, { "minQty": 10000, "pricePerThousand": 54 }, { "minQty": 25000, "pricePerThousand": 43 }],
+      "xxl": [{ "minQty": 250, "pricePerThousand": 196 }, { "minQty": 1000, "pricePerThousand": 157 }, { "minQty": 2500, "pricePerThousand": 125 }, { "minQty": 5000, "pricePerThousand": 100 }, { "minQty": 10000, "pricePerThousand": 80 }, { "minQty": 25000, "pricePerThousand": 64 }]
+    },
+    "semi_gloss_poly": {
+      "xs": [{ "minQty": 250, "pricePerThousand": 55 }, { "minQty": 1000, "pricePerThousand": 44 }, { "minQty": 2500, "pricePerThousand": 35 }, { "minQty": 5000, "pricePerThousand": 28 }, { "minQty": 10000, "pricePerThousand": 22 }, { "minQty": 25000, "pricePerThousand": 18 }],
+      "s": [{ "minQty": 250, "pricePerThousand": 70 }, { "minQty": 1000, "pricePerThousand": 56 }, { "minQty": 2500, "pricePerThousand": 45 }, { "minQty": 5000, "pricePerThousand": 36 }, { "minQty": 10000, "pricePerThousand": 29 }, { "minQty": 25000, "pricePerThousand": 23 }],
+      "m": [{ "minQty": 250, "pricePerThousand": 92 }, { "minQty": 1000, "pricePerThousand": 73 }, { "minQty": 2500, "pricePerThousand": 58 }, { "minQty": 5000, "pricePerThousand": 47 }, { "minQty": 10000, "pricePerThousand": 37 }, { "minQty": 25000, "pricePerThousand": 30 }],
+      "l": [{ "minQty": 250, "pricePerThousand": 130 }, { "minQty": 1000, "pricePerThousand": 104 }, { "minQty": 2500, "pricePerThousand": 83 }, { "minQty": 5000, "pricePerThousand": 66 }, { "minQty": 10000, "pricePerThousand": 53 }, { "minQty": 25000, "pricePerThousand": 42 }],
+      "xl": [{ "minQty": 250, "pricePerThousand": 205 }, { "minQty": 1000, "pricePerThousand": 164 }, { "minQty": 2500, "pricePerThousand": 131 }, { "minQty": 5000, "pricePerThousand": 105 }, { "minQty": 10000, "pricePerThousand": 84 }, { "minQty": 25000, "pricePerThousand": 67 }],
+      "xxl": [{ "minQty": 250, "pricePerThousand": 310 }, { "minQty": 1000, "pricePerThousand": 248 }, { "minQty": 2500, "pricePerThousand": 198 }, { "minQty": 5000, "pricePerThousand": 159 }, { "minQty": 10000, "pricePerThousand": 127 }, { "minQty": 25000, "pricePerThousand": 102 }]
+    },
+    "clear_poly": {
+      "xs": [{ "minQty": 250, "pricePerThousand": 60 }, { "minQty": 1000, "pricePerThousand": 48 }, { "minQty": 2500, "pricePerThousand": 38 }, { "minQty": 5000, "pricePerThousand": 31 }, { "minQty": 10000, "pricePerThousand": 24 }, { "minQty": 25000, "pricePerThousand": 20 }],
+      "s": [{ "minQty": 250, "pricePerThousand": 76 }, { "minQty": 1000, "pricePerThousand": 61 }, { "minQty": 2500, "pricePerThousand": 49 }, { "minQty": 5000, "pricePerThousand": 39 }, { "minQty": 10000, "pricePerThousand": 31 }, { "minQty": 25000, "pricePerThousand": 25 }],
+      "m": [{ "minQty": 250, "pricePerThousand": 100 }, { "minQty": 1000, "pricePerThousand": 80 }, { "minQty": 2500, "pricePerThousand": 64 }, { "minQty": 5000, "pricePerThousand": 51 }, { "minQty": 10000, "pricePerThousand": 41 }, { "minQty": 25000, "pricePerThousand": 33 }],
+      "l": [{ "minQty": 250, "pricePerThousand": 142 }, { "minQty": 1000, "pricePerThousand": 113 }, { "minQty": 2500, "pricePerThousand": 91 }, { "minQty": 5000, "pricePerThousand": 72 }, { "minQty": 10000, "pricePerThousand": 58 }, { "minQty": 25000, "pricePerThousand": 46 }],
+      "xl": [{ "minQty": 250, "pricePerThousand": 224 }, { "minQty": 1000, "pricePerThousand": 179 }, { "minQty": 2500, "pricePerThousand": 143 }, { "minQty": 5000, "pricePerThousand": 114 }, { "minQty": 10000, "pricePerThousand": 92 }, { "minQty": 25000, "pricePerThousand": 73 }],
+      "xxl": [{ "minQty": 250, "pricePerThousand": 338 }, { "minQty": 1000, "pricePerThousand": 270 }, { "minQty": 2500, "pricePerThousand": 216 }, { "minQty": 5000, "pricePerThousand": 173 }, { "minQty": 10000, "pricePerThousand": 138 }, { "minQty": 25000, "pricePerThousand": 111 }]
+    },
+    "white_vinyl": {
+      "xs": [{ "minQty": 250, "pricePerThousand": 64 }, { "minQty": 1000, "pricePerThousand": 51 }, { "minQty": 2500, "pricePerThousand": 41 }, { "minQty": 5000, "pricePerThousand": 33 }, { "minQty": 10000, "pricePerThousand": 26 }, { "minQty": 25000, "pricePerThousand": 21 }],
+      "s": [{ "minQty": 250, "pricePerThousand": 82 }, { "minQty": 1000, "pricePerThousand": 65 }, { "minQty": 2500, "pricePerThousand": 52 }, { "minQty": 5000, "pricePerThousand": 42 }, { "minQty": 10000, "pricePerThousand": 34 }, { "minQty": 25000, "pricePerThousand": 27 }],
+      "m": [{ "minQty": 250, "pricePerThousand": 108 }, { "minQty": 1000, "pricePerThousand": 86 }, { "minQty": 2500, "pricePerThousand": 69 }, { "minQty": 5000, "pricePerThousand": 55 }, { "minQty": 10000, "pricePerThousand": 44 }, { "minQty": 25000, "pricePerThousand": 35 }],
+      "l": [{ "minQty": 250, "pricePerThousand": 152 }, { "minQty": 1000, "pricePerThousand": 122 }, { "minQty": 2500, "pricePerThousand": 97 }, { "minQty": 5000, "pricePerThousand": 78 }, { "minQty": 10000, "pricePerThousand": 62 }, { "minQty": 25000, "pricePerThousand": 50 }],
+      "xl": [{ "minQty": 250, "pricePerThousand": 240 }, { "minQty": 1000, "pricePerThousand": 192 }, { "minQty": 2500, "pricePerThousand": 154 }, { "minQty": 5000, "pricePerThousand": 123 }, { "minQty": 10000, "pricePerThousand": 98 }, { "minQty": 25000, "pricePerThousand": 79 }],
+      "xxl": [{ "minQty": 250, "pricePerThousand": 362 }, { "minQty": 1000, "pricePerThousand": 290 }, { "minQty": 2500, "pricePerThousand": 232 }, { "minQty": 5000, "pricePerThousand": 185 }, { "minQty": 10000, "pricePerThousand": 148 }, { "minQty": 25000, "pricePerThousand": 119 }]
+    },
+    "white_bopp": {
+      "xs": [{ "minQty": 250, "pricePerThousand": 52 }, { "minQty": 1000, "pricePerThousand": 42 }, { "minQty": 2500, "pricePerThousand": 33 }, { "minQty": 5000, "pricePerThousand": 27 }, { "minQty": 10000, "pricePerThousand": 21 }, { "minQty": 25000, "pricePerThousand": 17 }],
+      "s": [{ "minQty": 250, "pricePerThousand": 66 }, { "minQty": 1000, "pricePerThousand": 53 }, { "minQty": 2500, "pricePerThousand": 42 }, { "minQty": 5000, "pricePerThousand": 34 }, { "minQty": 10000, "pricePerThousand": 27 }, { "minQty": 25000, "pricePerThousand": 22 }],
+      "m": [{ "minQty": 250, "pricePerThousand": 87 }, { "minQty": 1000, "pricePerThousand": 69 }, { "minQty": 2500, "pricePerThousand": 55 }, { "minQty": 5000, "pricePerThousand": 44 }, { "minQty": 10000, "pricePerThousand": 35 }, { "minQty": 25000, "pricePerThousand": 28 }],
+      "l": [{ "minQty": 250, "pricePerThousand": 123 }, { "minQty": 1000, "pricePerThousand": 98 }, { "minQty": 2500, "pricePerThousand": 79 }, { "minQty": 5000, "pricePerThousand": 63 }, { "minQty": 10000, "pricePerThousand": 50 }, { "minQty": 25000, "pricePerThousand": 40 }],
+      "xl": [{ "minQty": 250, "pricePerThousand": 194 }, { "minQty": 1000, "pricePerThousand": 155 }, { "minQty": 2500, "pricePerThousand": 124 }, { "minQty": 5000, "pricePerThousand": 99 }, { "minQty": 10000, "pricePerThousand": 79 }, { "minQty": 25000, "pricePerThousand": 63 }],
+      "xxl": [{ "minQty": 250, "pricePerThousand": 293 }, { "minQty": 1000, "pricePerThousand": 234 }, { "minQty": 2500, "pricePerThousand": 187 }, { "minQty": 5000, "pricePerThousand": 150 }, { "minQty": 10000, "pricePerThousand": 120 }, { "minQty": 25000, "pricePerThousand": 96 }]
+    }
+  },
+  "printUplift": {
+    "blank": { "perThousandPct": 0, "setup": 0 },
+    "one_colour": { "perThousandPct": 45, "setup": 45 },
+    "two_colour": { "perThousandPct": 75, "setup": 65 },
+    "full_colour": { "perThousandPct": 120, "setup": 85 },
+    "full_colour_white": { "perThousandPct": 150, "setup": 110 }
+  },
+  "adhesiveUplift": {
+    "permanent": { "perThousandPct": 0 },
+    "removable": { "perThousandPct": 12 },
+    "freezer": { "perThousandPct": 18 },
+    "extreme_temp": { "perThousandPct": 25 },
+    "extreme_moisture": { "perThousandPct": 20 }
+  },
+  "coatingUplift": {
+    "none": { "perThousandPct": 0 },
+    "gloss_laminate": { "perThousandPct": 22 },
+    "matte_laminate": { "perThousandPct": 22 },
+    "uv": { "perThousandPct": 15 }
+  },
+  "optionCharges": {
+    "perforationPerThousand": 2.5,
+    "fanfoldPerThousand": 3,
+    "nonStandardCoreSetup": 25
+  },
+  "dies": {
+    "standardSizes": [
+      { "widthIn": 1, "heightIn": 1 }, { "widthIn": 1.5, "heightIn": 1 }, { "widthIn": 2, "heightIn": 1 },
+      { "widthIn": 2, "heightIn": 2 }, { "widthIn": 2, "heightIn": 3 }, { "widthIn": 2.25, "heightIn": 1.25 },
+      { "widthIn": 2.5, "heightIn": 2.5 }, { "widthIn": 3, "heightIn": 2 }, { "widthIn": 3, "heightIn": 3 },
+      { "widthIn": 3, "heightIn": 4 }, { "widthIn": 3, "heightIn": 5 }, { "widthIn": 3.5, "heightIn": 2 },
+      { "widthIn": 4, "heightIn": 2 }, { "widthIn": 4, "heightIn": 3 }, { "widthIn": 4, "heightIn": 4 },
+      { "widthIn": 4, "heightIn": 6 }, { "widthIn": 5, "heightIn": 3 }, { "widthIn": 5, "heightIn": 4 },
+      { "widthIn": 6, "heightIn": 4 }, { "widthIn": 8, "heightIn": 6 }
+    ],
+    "newDieCharge": 95
+  },
+  "turnaround": [
+    { "maxQuantity": 2500, "businessDays": 5 },
+    { "maxQuantity": 10000, "businessDays": 7 },
+    { "maxQuantity": 50000, "businessDays": 10 }
+  ],
+  "rush": { "available": false, "businessDays": 3, "upliftPct": 35 },
+  "materialRules": [
+    { "material": "direct_thermal", "disallowedPrintMethods": ["full_colour_white"], "disallowedCoatings": ["gloss_laminate", "matte_laminate", "uv"] },
+    { "material": "thermal_transfer", "disallowedPrintMethods": ["full_colour_white"] },
+    { "material": "clear_poly", "disallowedPrintMethods": ["blank"] }
+  ]
+}
