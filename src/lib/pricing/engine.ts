@@ -71,8 +71,11 @@ function breakFor(breaks: { minQty: number; pricePerThousand: number }[], qty: n
   return chosen;
 }
 
-export function isStandardDie(card: RateCard, w: number, h: number) {
+export function isStandardDie(card: RateCard, w: number, h: number, shape: LabelSpec["shape"] = "rectangle") {
   const eq = (a: number, b: number) => Math.abs(a - b) < 0.01;
+  if (shape === "circle") return eq(w, h) && (card.dies.standardCircles ?? []).some((d) => eq(d, w));
+  if (shape === "oval")
+    return (card.dies.standardOvals ?? []).some((d) => (eq(d.widthIn, w) && eq(d.heightIn, h)) || (eq(d.widthIn, h) && eq(d.heightIn, w)));
   return card.dies.standardSizes.some(
     (d) => (eq(d.widthIn, w) && eq(d.heightIn, h)) || (eq(d.widthIn, h) && eq(d.heightIn, w)),
   );
@@ -94,6 +97,8 @@ export function outOfRangeReasons(card: RateCard, spec: LabelSpec): string[] {
   const L = card.limits;
   if (spec.material === "other") r.push("a material that isn't on our standard list");
   if (spec.core === "other") r.push("a non-standard core size");
+  if (spec.shape === "custom") r.push("a custom die-cut shape");
+  if (spec.shape === "circle" && Math.abs(spec.widthIn - spec.heightIn) > 0.01) r.push("a circle that isn't the same width and height");
   if (spec.widthIn < L.minWidthIn || spec.widthIn > L.maxWidthIn)
     r.push(`a width outside ${L.minWidthIn}" to ${L.maxWidthIn}"`);
   if (spec.heightIn < L.minHeightIn || spec.heightIn > L.maxHeightIn)
@@ -149,12 +154,13 @@ function priceInRange(spec: LabelSpec, card: RateCard): PricedQuote {
   const thousands = spec.quantity / 1000;
   const items: LineItem[] = [];
   const warnings: string[] = [];
+  const shape = spec.shape ?? "rectangle";
 
   const brk = breakFor(card.basePrice[material][band.id], spec.quantity);
   const base = brk.pricePerThousand * thousands;
   items.push({
     code: "base",
-    label: `${label(material)} stock, ${spec.widthIn}" × ${spec.heightIn}"`,
+    label: `${label(material)} stock, ${shape === "circle" ? `${spec.widthIn}" circle` : `${spec.widthIn}" × ${spec.heightIn}"`}${shape === "rounded" ? ", rounded corners" : shape === "oval" ? " oval" : ""}`,
     amount: round2(base),
     explain: `${spec.quantity.toLocaleString()} labels at $${brk.pricePerThousand}/1,000 for ${band.label} on ${label(material)}. Price per thousand drops at ${nextBreak(card, material, band.id, spec.quantity)}.`,
   });
@@ -214,15 +220,15 @@ function priceInRange(spec: LabelSpec, card: RateCard): PricedQuote {
     });
   }
 
-  const newDie = spec.newDie ?? !isStandardDie(card, spec.widthIn, spec.heightIn);
+  const newDie = spec.newDie ?? !isStandardDie(card, spec.widthIn, spec.heightIn, shape);
   if (newDie) {
     items.push({
       code: "die",
       label: "Custom die",
       amount: card.dies.newDieCharge,
-      explain: `${spec.widthIn}" × ${spec.heightIn}" isn't one of our standard sizes, so a cutting die is made once. Reorders of the same size don't pay it again.`,
+      explain: `${shape === "circle" ? `A ${spec.widthIn}" circle` : shape === "oval" ? `A ${spec.widthIn}" × ${spec.heightIn}" oval` : `${spec.widthIn}" × ${spec.heightIn}"`} isn't one of our standard sizes, so a cutting die is made once. Reorders of the same size don't pay it again.`,
     });
-    const near = nearestStandardDie(card, spec.widthIn, spec.heightIn);
+    const near = shape === "rectangle" || shape === "rounded" ? nearestStandardDie(card, spec.widthIn, spec.heightIn) : null;
     if (near) warnings.push(`A standard ${near.widthIn}" × ${near.heightIn}" label would avoid the $${card.dies.newDieCharge} die charge.`);
   }
 
@@ -250,7 +256,7 @@ function priceInRange(spec: LabelSpec, card: RateCard): PricedQuote {
   return {
     ok: true,
     rateCardVersion: card.version,
-    spec: { ...spec, newDie },
+    spec: { ...spec, shape, newDie },
     sqIn,
     sizeBand: band.id,
     lineItems: items,
@@ -295,6 +301,11 @@ export function label(v: string): string {
     freezer: "Freezer-grade",
     extreme_temp: "Extreme temperature",
     extreme_moisture: "Extreme moisture",
+    rectangle: "Rectangle, square corners",
+    rounded: "Rectangle, rounded corners",
+    circle: "Circle",
+    oval: "Oval",
+    custom: "Custom die-cut shape",
     none: "No coating",
     gloss_laminate: "Gloss laminate",
     matte_laminate: "Matte laminate",

@@ -61,3 +61,21 @@ describe("large runs", () => {
     expect(r.ok).toBe(true);
   });
 });
+
+describe("shapes", () => {
+  it("rounded corners cost nothing extra", () => {
+    const a = priceQuote(base), b = priceQuote({ ...base, shape: "rounded" });
+    if (!a.ok || !b.ok) throw new Error();
+    expect(b.subtotal).toBe(a.subtotal);
+  });
+  it("standard circle has no die; odd circle does", () => {
+    const a = priceQuote({ ...base, shape: "circle", widthIn: 3, heightIn: 3 });
+    const b = priceQuote({ ...base, shape: "circle", widthIn: 2.75, heightIn: 2.75 });
+    if (!a.ok || !b.ok) throw new Error();
+    expect(a.lineItems.map(i => i.code)).not.toContain("die");
+    expect(b.lineItems.map(i => i.code)).toContain("die");
+  });
+  it("custom shape goes to a person", () => {
+    expect(priceQuote({ ...base, shape: "custom" }).ok).toBe(false);
+  });
+});

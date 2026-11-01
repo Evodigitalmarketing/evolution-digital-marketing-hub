@@ -1423,7 +1423,33 @@
         "heightIn": 6
       }
     ],
-    "newDieCharge": 95
+    "newDieCharge": 95,
+    "standardCircles": [
+      1,
+      1.5,
+      2,
+      2.5,
+      3,
+      4
+    ],
+    "standardOvals": [
+      {
+        "widthIn": 2,
+        "heightIn": 3
+      },
+      {
+        "widthIn": 3,
+        "heightIn": 2
+      },
+      {
+        "widthIn": 2.5,
+        "heightIn": 3.5
+      },
+      {
+        "widthIn": 3,
+        "heightIn": 4
+      }
+    ]
   },
   "turnaround": [
     {

@@ -28,9 +28,12 @@ export type PrintMethod =
 
 export type CoreSize = "1" | "1.5" | "3" | "other";
 
+export type Shape = "rectangle" | "rounded" | "circle" | "oval" | "custom";
+
 export interface LabelSpec {
   widthIn: number;
   heightIn: number;
+  shape?: Shape; // default rectangle
   material: Material;
   adhesive: Adhesive;
   coating: Coating;
@@ -82,6 +85,8 @@ export interface RateCard {
   };
   dies: {
     standardSizes: Array<{ widthIn: number; heightIn: number }>;
+    standardCircles?: number[];
+    standardOvals?: Array<{ widthIn: number; heightIn: number }>;
     newDieCharge: number;
   };
   turnaround: Array<{ maxQuantity: number; businessDays: number }>;

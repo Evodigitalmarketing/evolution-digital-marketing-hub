@@ -127,6 +127,7 @@ export function recommend(n: Needs): Recommendation {
   const spec: LabelSpec = {
     widthIn,
     heightIn,
+    shape: n.shape ?? "rectangle",
     material,
     adhesive,
     coating,
@@ -159,7 +160,8 @@ export function plainSummary(s: LabelSpec): string {
   if (s.coating === "matte_laminate") bits.push("matte");
   if (s.material === "thermal_transfer" || s.material === "direct_thermal") bits.push("thermal");
   bits.push("labels,");
-  bits.push(`${s.widthIn}" × ${s.heightIn}",`);
+  if (s.shape === "circle") bits.push(`${s.widthIn}" circle,`);
+  else bits.push(`${s.widthIn}" × ${s.heightIn}"${s.shape === "oval" ? " oval" : s.shape === "rounded" ? " rounded-corner" : ""},`);
   bits.push(
     s.printMethod === "blank"
       ? "blank,"
@@ -174,6 +176,7 @@ export function plainSummary(s: LabelSpec): string {
 export function techSummary(s: LabelSpec): Array<[string, string]> {
   return [
     ["Size", `${s.widthIn}" × ${s.heightIn}"`],
+    ["Shape", label(s.shape ?? "rectangle")],
     ["Material", label(s.material)],
     ["Adhesive", label(s.adhesive)],
     ["Finish", label(s.coating)],

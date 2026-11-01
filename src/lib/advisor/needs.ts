@@ -38,6 +38,8 @@ export interface Needs {
   quantity?: number;
   widthIn?: number;
   heightIn?: number;
+  shape?: "rectangle" | "rounded" | "circle" | "oval" | "custom";
+  notes?: string; // anything a person should see (special requests)
   sizeHelp?: string; // the container they described, if they asked for size help
   application?: Application;
   printerMakeModel?: string;
