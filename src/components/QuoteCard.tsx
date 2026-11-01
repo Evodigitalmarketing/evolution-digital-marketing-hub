@@ -26,7 +26,14 @@ export function QuoteCard({ quote, compact = false }: { quote: Quote; compact?: 
 
   return (
     <div className="on-cream rounded-2xl bg-paper text-navy p-5 shadow-[0_2px_10px_rgba(42,49,68,.08)] border border-navy/10">
-      <span className="eyebrow">Quote {quote.id}</span>
+      <div className="flex items-center justify-between gap-2">
+        <span className="eyebrow">Quote {quote.id}</span>
+        {price.rateCardVersion.includes("placeholder") && (
+          <span title="Sample prices for this preview. Label Source's own rate card goes here." className="rounded-full bg-navy text-lime px-2.5 py-1 text-[11px] font-extrabold tracking-wide uppercase">
+            Demo pricing
+          </span>
+        )}
+      </div>
       <h2 className="mt-2 text-xl leading-snug">{rec.plainSummary}</h2>
 
       <div className="mt-4 flex items-baseline justify-between border-t-2 border-navy pt-3">

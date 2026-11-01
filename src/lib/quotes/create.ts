@@ -3,6 +3,7 @@ import { recommend } from "../advisor/recommend";
 import { getRateCard, priceQuote } from "../pricing/engine";
 import { newQuoteId, type Quote } from "./model";
 import { saveQuote } from "./store";
+import { notifyOwner } from "../notify/email";
 
 export async function createQuote(needs: Needs, channel: Quote["channel"] = "web"): Promise<Quote> {
   const card = getRateCard();
@@ -27,5 +28,6 @@ export async function createQuote(needs: Needs, channel: Quote["channel"] = "web
     ],
   };
   await saveQuote(quote);
+  void notifyOwner(quote);
   return quote;
 }

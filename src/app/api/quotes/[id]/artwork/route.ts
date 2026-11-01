@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { getQuote, saveQuote } from "@/lib/quotes/store";
 import { preflight } from "@/lib/artwork/preflight";
+import { notifyOwner } from "@/lib/notify/email";
 
 
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -27,5 +28,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     detail: `${file.name} (${bytes.length} bytes)` + (result.preflight.ok ? "" : `: ${result.preflight.issues.join(" | ")}`),
   });
   await saveQuote(quote);
+  if (result.preflight.ok) void notifyOwner(quote, "artwork");
   return NextResponse.json({ quote });
 }

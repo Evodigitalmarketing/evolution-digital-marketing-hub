@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getQuote, saveQuote } from "@/lib/quotes/store";
 import { isExpired } from "@/lib/quotes/model";
+import { notifyOwner } from "@/lib/notify/email";
 
 
 // Proof approval. Records who/when/which file, plus the artwork-rights confirmation.
@@ -20,6 +21,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     quote.status = "paid";
     quote.events.push({ at: new Date().toISOString(), type: "paid", detail: "demo checkout stub" });
     await saveQuote(quote);
+    void notifyOwner(quote, "paid");
     return NextResponse.json({ quote });
   }
 
@@ -32,5 +34,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   quote.status = "proof_approved";
   quote.events.push({ at: quote.proof.approvedAt, type: "proof_approved", detail: quote.proof.fileHash });
   await saveQuote(quote);
+  void notifyOwner(quote, "proof_approved");
   return NextResponse.json({ quote });
 }

@@ -3,7 +3,14 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL || "https://palevioletred-viper-239162.hostingersite.com"),
   title: "Instant Label Quote | Label Source",
+  openGraph: {
+    title: "Custom labels, priced in minutes | Label Source",
+    description: "Tell us about your product, get a firm price for custom printed labels, and order online. Printed in Winnipeg, shipped Canada-wide.",
+    siteName: "Label Source",
+    type: "website",
+  },
   description:
     "Describe your product, get a firm price for custom printed labels, upload your artwork and order. Canadian-made labels from Label Source, Winnipeg.",
 };

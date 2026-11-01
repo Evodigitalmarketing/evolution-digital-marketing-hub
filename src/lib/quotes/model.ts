@@ -41,6 +41,7 @@ export interface Quote {
   artwork?: ArtworkRecord;
   proof?: { approvedAt: string; fileHash: string; rightsConfirmed: boolean };
   events: QuoteEvent[];
+  transcript?: Array<{ role: "user" | "assistant"; text: string }>;
 }
 
 export function newQuoteId() {

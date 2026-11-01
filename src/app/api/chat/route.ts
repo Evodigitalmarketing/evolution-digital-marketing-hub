@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { agentEnabled, runAgent, type ChatTurn } from "@/lib/agent/run";
 import type { AgentState } from "@/lib/agent/tools";
+import { getQuote, saveQuote } from "@/lib/quotes/store";
 
 export const maxDuration = 60;
 
@@ -27,6 +28,15 @@ export async function POST(req: Request) {
   if (!Array.isArray(state.needs.environment)) state.needs.environment = [];
   try {
     const out = await runAgent(history, state, "web");
+    // Keep the conversation with the quote so the owner can read it.
+    if (out.state.quoteId) {
+      const q = out.quote ?? (await getQuote(out.state.quoteId));
+      if (q) {
+        q.transcript = [...history, { role: "assistant" as const, text: out.reply }];
+        q.needs = out.state.needs;
+        await saveQuote(q);
+      }
+    }
     return NextResponse.json(out);
   } catch (e) {
     console.error("agent error", e);

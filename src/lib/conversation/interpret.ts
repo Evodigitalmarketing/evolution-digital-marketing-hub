@@ -192,6 +192,13 @@ export function interpretAnswer(stepId: string, text: string, needs: Needs): Int
         note: `For ${/\d/.test(s.from) ? `a ${s.from} container` : s.from}, ${s.w}" × ${s.h}" is a common label size. If you know the exact flat area, type the size and I'll use that instead.`,
       };
     }
+    case "shape": {
+      if (has(t, "round(ed)? corner", "rounded")) return { value: "rounded", display: t };
+      if (has(t, "circle", "round")) return { value: "circle", display: t };
+      if (has(t, "oval", "ellipse")) return { value: "oval", display: t };
+      if (has(t, "rect", "square", "normal", "standard")) return { value: "rectangle", display: t };
+      return { display: t, clarify: "Rectangle, rounded corners, circle or oval?" };
+    }
     case "application": {
       const a = guessApplication(t);
       return a ? { value: a, display: t } : { value: "unsure", display: t, note: "No problem, we'll confirm how they're applied before printing." };

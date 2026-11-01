@@ -186,6 +186,30 @@ export const STEPS: Step[] = [
     ack: (n) => (n.sizeHelp && SIZE_SUGGESTIONS.some((s) => s.label === n.sizeHelp) ? `For a ${n.sizeHelp.toLowerCase()}, ${n.widthIn}" × ${n.heightIn}" is a common size. Tip: measure the flat area where the label will sit; you can change the size any time.` : undefined),
   },
   {
+    id: "shape",
+    kind: "chips",
+    prompt: () => "What shape should the labels be?",
+    options: [
+      { id: "rectangle", label: "Rectangle" },
+      { id: "rounded", label: "Rounded corners", hint: "no extra cost" },
+      { id: "circle", label: "Circle" },
+      { id: "oval", label: "Oval" },
+    ],
+    skipIf: (n) => !!n.shape || n.category === "shipping_barcode",
+    apply: (n, a) => {
+      const shape = String(a) as Needs["shape"];
+      const out = { ...n, shape };
+      if (shape === "circle" && out.widthIn) out.heightIn = out.widthIn;
+      return out;
+    },
+    ack: (n) =>
+      n.shape === "circle"
+        ? `A ${n.widthIn}" circle it is. ${n.widthIn && [1, 1.5, 2, 2.5, 3, 4].includes(n.widthIn) ? "That's a standard size, so no die charge." : "If that size isn't one of our standard circles, a one-time die charge is added; reorders don't pay it again."}`
+        : n.shape === "rounded"
+          ? "Rounded corners look more finished and cost nothing extra."
+          : undefined,
+  },
+  {
     id: "application",
     kind: "chips",
     prompt: () => "How will the labels be applied?",
