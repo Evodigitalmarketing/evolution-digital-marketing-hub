@@ -34,6 +34,8 @@ export const TOOLS: Anthropic.Tool[] = [
         widthIn: { type: "number", description: "Label width in inches. Convert mm (÷25.4)." },
         heightIn: { type: "number", description: "Label height in inches." },
         shape: { type: "string", enum: ["rectangle", "rounded", "circle", "oval", "custom"] },
+        finish: { type: "string", enum: ["gloss", "matte", "uv", "none"], description: "Only if the customer states a preference; otherwise the advisor picks the right protection." },
+        sizeConfirmed: { type: "boolean", description: "True once the customer gave or agreed to the size. A size you only suggested is not confirmed." },
         application: { type: "string", enum: ["by_hand", "own_printer", "applicator", "unsure"] },
         printerMakeModel: { type: "string" },
         artwork: { type: "string", enum: ["print_ready", "logo_only", "need_design", "unsure"] },
@@ -90,6 +92,7 @@ export function missingFields(n: Needs): string[] {
   if (!n.look) m.push("look (full colour, one colour, clear, blank)");
   if (!n.quantity) m.push("quantity");
   if (n.widthIn == null || n.heightIn == null) m.push("label size");
+  else if (!n.sizeConfirmed) m.push("customer to confirm the suggested label size");
   if (!n.application) m.push("how labels are applied (hand, own printer, applicator)");
   if (n.application === "own_printer" && !n.printerMakeModel) m.push("printer make and model");
   if (n.look !== "blank" && !n.artwork) m.push("whether they have print-ready artwork");
@@ -101,7 +104,7 @@ type Input = Record<string, unknown>;
 
 export function applyUpdate(n: Needs, input: Input): Needs {
   const out: Needs = { ...n, environment: [...n.environment] };
-  const keys = ["productDescription", "category", "surface", "look", "removable", "quantity", "widthIn", "heightIn", "shape", "application", "printerMakeModel", "artwork", "notes"] as const;
+  const keys = ["productDescription", "category", "surface", "look", "removable", "quantity", "widthIn", "heightIn", "shape", "finish", "sizeConfirmed", "application", "printerMakeModel", "artwork", "notes"] as const;
   for (const k of keys) if (input[k] !== undefined && input[k] !== null) (out as unknown as Record<string, unknown>)[k] = input[k];
   if (Array.isArray(input.environment)) out.environment = input.environment as Needs["environment"];
   if (input.shape === "circle" && out.widthIn && (out.heightIn == null || out.heightIn !== out.widthIn)) out.heightIn = out.widthIn;
@@ -158,6 +161,8 @@ export async function runTool(
         return { result: { error: "Need a label size and quantity first." }, state };
       if (!n.contact?.email && !n.contact?.phone)
         return { result: { error: "Ask for their name and an email or mobile number first, so the quote link can be sent." }, state };
+      if (!n.sizeConfirmed)
+        return { result: { error: "The customer hasn't confirmed the label size yet. Ask them to confirm it (or give their own) before issuing the quote." }, state };
       const quote = await createQuote(n, channel);
       return {
         result: {

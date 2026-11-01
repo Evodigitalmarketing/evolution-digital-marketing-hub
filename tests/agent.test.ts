@@ -22,7 +22,7 @@ beforeEach(() => { process.env.ANTHROPIC_API_KEY = "test"; script.length = 0; })
 describe("agent loop", () => {
   it("records needs, creates a quote with engine prices, returns final text", async () => {
     script.push(
-      { stop_reason: "tool_use", content: [{ type: "text", text: "Great, noting that." }, toolUse("t1", "update_needs", { productDescription: "hot sauce", category: "food_beverage", surface: "glass", environment: ["fridge"], look: "full_colour", quantity: 2500, widthIn: 3, heightIn: 2, application: "by_hand", artwork: "print_ready", contactName: "Sam", contactEmail: "sam@x.ca" })] },
+      { stop_reason: "tool_use", content: [{ type: "text", text: "Great, noting that." }, toolUse("t1", "update_needs", { productDescription: "hot sauce", category: "food_beverage", surface: "glass", environment: ["fridge"], look: "full_colour", quantity: 2500, widthIn: 3, heightIn: 2, sizeConfirmed: true, application: "by_hand", artwork: "print_ready", contactName: "Sam", contactEmail: "sam@x.ca" })] },
       { stop_reason: "tool_use", content: [toolUse("t2", "create_quote", {})] },
       { stop_reason: "end_turn", content: [{ type: "text", text: "Your quote is ready." }] },
     );

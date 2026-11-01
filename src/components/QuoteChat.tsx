@@ -14,6 +14,13 @@ const STARTERS = [
   "Coffee bags, full colour, about 2,500",
 ];
 
+// Render **bold** from the assistant as real bold; everything else stays plain text.
+function formatText(t: string) {
+  return t.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : part,
+  );
+}
+
 type Msg =
   | { role: "assistant"; text: string }
   | { role: "user"; text: string }
@@ -42,7 +49,7 @@ export function QuoteChat() {
   }, []);
 
   // In AI mode the chips are suggestions for whatever is still missing.
-  const aiIdx = mode === "ai" && msgs.length > 1 ? nextStep(needs, 0) : mode === "ai" ? 0 : -1;
+  const aiIdx = mode === "ai" && quoteId ? -1 : mode === "ai" && msgs.length > 1 ? nextStep(needs, 0) : mode === "ai" ? 0 : -1;
   const step = mode === "ai" ? (aiIdx >= 0 ? STEPS[aiIdx] : null) : stepIdx >= 0 ? STEPS[stepIdx] : null;
 
   async function sendAI(userText: string, display?: string, needsOverride?: Needs) {
@@ -210,8 +217,8 @@ export function QuoteChat() {
               <QuoteCard quote={m.quote} />
             </div>
           ) : (
-            <div key={i} className={`rise msg ${m.role === "user" ? "them" : "us"}`}>
-              {m.text}
+            <div key={i} className={`rise msg whitespace-pre-line ${m.role === "user" ? "them" : "us"}`}>
+              {formatText(m.text)}
             </div>
           ),
         )}

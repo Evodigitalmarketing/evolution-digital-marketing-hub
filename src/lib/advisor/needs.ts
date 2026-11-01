@@ -39,6 +39,8 @@ export interface Needs {
   widthIn?: number;
   heightIn?: number;
   shape?: "rectangle" | "rounded" | "circle" | "oval" | "custom";
+  finish?: "gloss" | "matte" | "uv" | "none"; // customer preference; otherwise the advisor chooses
+  sizeConfirmed?: boolean;
   notes?: string; // anything a person should see (special requests)
   sizeHelp?: string; // the container they described, if they asked for size help
   application?: Application;

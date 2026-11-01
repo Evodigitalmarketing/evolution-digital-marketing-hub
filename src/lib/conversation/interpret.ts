@@ -178,7 +178,8 @@ export function interpretAnswer(stepId: string, text: string, needs: Needs): Int
       return l ? { value: l, display: t } : { display: t, clarify: "Full colour, one colour, a clear 'no-label' look, or blank?" };
     }
     case "quantity": {
-      const q = parseQuantity(t);
+      const q = /\d\s*(x|×|by)\s*\d/i.test(t) ? undefined : parseQuantity(t);
+      if (q && q < 50) return { display: t, clarify: `Just ${q}? Our smallest run is a few hundred labels. How many do you need? A number like 500, 2500 or 10k is perfect.` };
       return q ? { value: String(q), display: `${q.toLocaleString()} labels` } : { display: t, clarify: "How many labels? A number like 2500 or 10k is perfect." };
     }
     case "size": {

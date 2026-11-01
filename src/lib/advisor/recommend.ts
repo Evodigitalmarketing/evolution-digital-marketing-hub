@@ -81,6 +81,28 @@ export function recommend(n: Needs): Recommendation {
     reasons.push({ field: "coating", text: "No protective coating needed for a dry, indoor label. Adding one later is an easy upgrade." });
   }
 
+  // customer finish preference overrides the advisor's choice (not on thermal stock)
+  if (n.finish && material !== "direct_thermal" && material !== "thermal_transfer") {
+    const map = { gloss: "gloss_laminate", matte: "matte_laminate", uv: "uv", none: "none" } as const;
+    const chosen = map[n.finish];
+    if (chosen !== coating) {
+      const idx = reasons.findIndex((r) => r.field === "coating");
+      const text =
+        n.finish === "matte"
+          ? "You chose a matte finish: a clear protective laminate with a soft, non-shiny look. It protects against moisture and scuffs just like gloss."
+          : n.finish === "gloss"
+            ? "You chose a gloss finish: a clear, shiny laminate that makes colours pop and protects the print."
+            : n.finish === "uv"
+              ? "You chose a UV coating: a lighter protective varnish with good scuff resistance."
+              : wetish
+                ? "You chose no protective coating. On a label that gets wet, the print may scuff or smear over time."
+                : "No protective coating, as you asked.";
+      if (idx >= 0) reasons[idx] = { field: "coating", text };
+      else reasons.push({ field: "coating", text });
+    }
+    coating = chosen;
+  }
+
   // --- print --------------------------------------------------------------
   let printMethod: PrintMethod;
   if (n.look === "blank") printMethod = "blank";
